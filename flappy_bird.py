@@ -28,6 +28,10 @@ while True:
         if event.type is pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type is pygame.KEYDOWN:
+            if event.key is pygame.K_SPACE:
+                 bird_movement = 0
+                 bird_movement -=6
     my_view.blit(bg_image,(0,0))#From this image for background that we loaded will adjust in our game screen        
     my_view.blit(bird_body,rect_for_bird)#From this image for bird and its rectengular collision that we loaded will adjust in our game screen
     
