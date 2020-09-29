@@ -47,11 +47,29 @@ def bird_animation():
     return new_bird,rect_for_new_bird
 
 ##Function for displaying score
-def display_score():
-    score_body=game_font.render(str(score),True,(156,50,220 ))
-    rect_for_score=score_body.get_rect(center=(144,50))
-    my_view.blit(score_body,rect_for_score)
+def display_score(game_state):
+    if game_state is 'game_running':        
+        #For displaying only score
+        score_body=game_font.render("Score:{}".format(str(int(score))),True,(156,50,220 ))
+        rect_for_score=score_body.get_rect(center=(144,50))
+        my_view.blit(score_body,rect_for_score)
+   
+    if game_state is 'game_over':
+        #For displaying score
+        score_body=game_font.render("Score:{}".format(str(int(score))),True,(156,50,220 ))
+        rect_for_score=score_body.get_rect(center=(144,50))
+        my_view.blit(score_body,rect_for_score)
+        
+        #For displaying high score
+        high_score_body = game_font.render("High Score:{}".format(str(int(high_score))),True,(156,50,220 ))
+        rect_for_high_score = high_score_body.get_rect(center=(144,430))
+        my_view.blit(high_score_body,rect_for_high_score)
 
+##Function for comparing score and and high score 
+def update_score(score,high_score):
+    if score>high_score:
+        high_score=score
+    return high_score    
 ##It is for setting the size of a background
 #As our assets size is 288*512 therefore
 #We are also choosing this screen size for game
@@ -95,6 +113,9 @@ game_on=True
 score=0
 high_score=0
 
+##Adding game_over screen
+game_over_body=pygame.image.load('assets/gameover.png').convert_alpha()
+game_over_rect=game_over_body.get_rect(center=(144,256))
 
 ##It is a loop for getting gamescreen till game is on
 try:
@@ -113,7 +134,9 @@ try:
                          game_on=True
                          list_of_pipe.clear()
                          rect_for_bird.center =(50,256)
-                         bird_movement=0          
+                         bird_movement=0   
+                         score=0       
+                
                 if event.type is new_pipe:
                     list_of_pipe.extend(create_pipe())
 
@@ -145,7 +168,12 @@ try:
                 draw_pipes(list_of_pipe)
 
                 #Calling function for getting score
-                display_score()
+                score+=.01
+                display_score('game_running')
+            else:
+                my_view.blit(game_over_body,game_over_rect)
+                high_score=update_score(score,high_score)
+                display_score('game_over')    
         
             #For geting a moving base animation
             base_move_x-=1
