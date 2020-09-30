@@ -1,4 +1,6 @@
 import pygame ,sys ,random
+
+pygame.mixer.pre_init(frequency=44100,size=16,channels=1,buffer=512)
 pygame.init()
 
 ##It is a function for adding the base image after its end
@@ -31,6 +33,7 @@ def draw_pipes(pipes):
 def check_collision(pipes):
     for pipe in pipes:
         if rect_for_bird.colliderect(pipe):
+            sound_of_collision.play()
             return False            
     if rect_for_bird.top <= 0 or rect_for_bird.bottom >=450:
         return False
@@ -70,6 +73,7 @@ def update_score(score,high_score):
     if score>high_score:
         high_score=score
     return high_score    
+
 ##It is for setting the size of a background
 #As our assets size is 288*512 therefore
 #We are also choosing this screen size for game
@@ -117,6 +121,11 @@ high_score=0
 game_over_body=pygame.image.load('assets/gameover.png').convert_alpha()
 game_over_rect=game_over_body.get_rect(center=(144,256))
 
+##Adding sound effect
+sound_of_flap=pygame.mixer.Sound('sound/sfx_wing.wav')
+sound_of_collision=pygame.mixer.Sound('sound/sfx_hit.wav')
+sound_of_score=pygame.mixer.Sound('sound/sfx_point.wav')
+sound_of_score_time=100
 ##It is a loop for getting gamescreen till game is on
 try:
     while True:
@@ -128,7 +137,7 @@ try:
                     if event.key is pygame.K_SPACE and game_on:
                          bird_movement = 0
                          bird_movement -=6
-                  
+                         sound_of_flap.play()
                     ##For restarting the game from SPACE BAR                 
                     if event.key is pygame.K_SPACE and game_on is False:
                          game_on=True
@@ -169,6 +178,10 @@ try:
 
                 #Calling function for getting score
                 score+=.01
+                sound_of_score_time-=1
+                if sound_of_score_time <=0:
+                    sound_of_score.play()
+                    sound_of_score_time=100
                 display_score('game_running')
             else:
                 my_view.blit(game_over_body,game_over_rect)
